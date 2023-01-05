@@ -9,9 +9,16 @@ import (
 	"time"
 )
 
+const version = "1.0.0"
+
 type configuration struct {
 	port int
 	env  string
+}
+
+type application struct {
+	config configuration
+	logger *log.Logger
 }
 
 func main() {
@@ -23,10 +30,13 @@ func main() {
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
+	app := &application{
+		config,
+		logger,
+	}
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v1/healthcheck", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "status: available")
-	})
+	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", config.port),
