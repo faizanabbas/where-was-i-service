@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/faizanabbas/where-was-i-service/internal/data"
 )
 
 func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,5 +19,18 @@ func (app *application) readBookHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Fprintf(w, "read the details of book %d\n", id)
+	book := data.Book{
+		ID:             id,
+		CreatedAt:      time.Now(),
+		GBooksVolID:    "UvK1Slvkz3MC",
+		LastPageNumber: 81,
+		StartDate:      data.Date{Time: time.Now()},
+		FinishDate:     data.Date{},
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
+	if err != nil {
+		app.logger.Println(err)
+		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
+	}
 }
