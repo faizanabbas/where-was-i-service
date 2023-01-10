@@ -9,7 +9,18 @@ import (
 )
 
 func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "create a new book")
+	var input struct {
+		GBooksVolID    string `json:"gBooksVolId"`
+		LastPageNumber int64  `json:"lastPageNumber"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	fmt.Fprintf(w, "%+v\n", input)
 }
 
 func (app *application) readBookHandler(w http.ResponseWriter, r *http.Request) {
